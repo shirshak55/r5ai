@@ -1,0 +1,61 @@
+port = 8080
+
+
+# Admin Password Hash is used to verify the password.
+# Use the following shell command to generate hash (Assumes openssl is installed)
+# echo -n "foobar" | openssl dgst -sha256
+
+# The default password is shirshak123
+password_hash = "7852b2f259a3fb2ae40a7941f17ea061635077c790b9d01e996c7d0381fba0c7b29fe4d6ec077e86fcb9e2737646d82b33117c4ccc8ef0dc026cfb7ab110b8c8"
+
+
+# Frontend
+styles  = ["//fonts.googleapis.com/css?family=Ubuntu:300,400,700%7CUbuntu+Mono:400,700"]
+scripts = [""]
+
+
+# General Settings
+disable_sidebar = false
+hidden_regex=["^\\."]
+hide_folders = false
+hide_parent_folders = false
+max_icon_size = 40
+modes = ["details", "grid", "icons"]
+mode_toggle_enabled = false
+sizes =  [20, 40, 60, 80, 100, 140, 180, 220, 260, 300]
+
+auto_refresh_enabled = false
+auto_refresh_interval = 5000 # in milliseconds like always
+
+breadcrumbs_enabled = true
+
+
+enable_download = true
+
+calculate_folder_size_recusively = true
+
+
+[preview]
+audio = true
+image = true
+text  = true
+video = true
+
+
+[search]
+enabled = true
+
+[thumbnails]
+enabled=true
+image_extentions =  ["bmp", "gif", "ico", "jpg", "png"]
+video_extentions = ["avi","flv","mp4","webm"]
+document_extensions= ["pdf"]
+size = 240
+
+
+[tree]
+enabled= true
+show = true
+max_sub_folders = 50
+natural_sort = true
+ignore_case = true
