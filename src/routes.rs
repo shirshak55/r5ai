@@ -15,6 +15,7 @@ pub fn get_routes(
 pub fn handle_action() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
     warp::post()
         .and(warp::filters::query::query())
+        .and(warp::body::content_length_limit(1024 * 16).and(warp::body::json()))
         .and_then(controllers::index)
         .with(warp::trace::named("handle_action"))
 }

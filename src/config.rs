@@ -4,6 +4,7 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct Config {
+    pub base_directory: String,
     pub port: u16,
     pub password_hash: String,
     pub styles: Vec<String>,

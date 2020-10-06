@@ -1,7 +1,11 @@
 use tracing::info;
 
+mod archive;
 mod config;
+mod context;
 mod controllers;
+mod error;
+mod request;
 mod routes;
 
 fn main() -> Result<(), String> {
