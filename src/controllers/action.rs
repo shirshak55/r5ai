@@ -3,8 +3,7 @@ use crate::config::Config;
 use crate::context::Context;
 use crate::error::Errors::{self, InvalidAction, InvalidPath};
 use std::collections::HashMap;
-use tracing::event;
-use tracing::Level;
+use tracing::{error, info_span};
 
 #[derive(Debug)]
 pub struct Action {
@@ -16,7 +15,9 @@ impl Action {
     const ALLOWED_ACTIONS: [&'static str; 4] = ["download", "get", "login", "logout"];
 
     pub fn new(context: Context) -> Result<Self, Errors> {
-        event!(Level::INFO, ?context);
+        let _span = info_span!("New Action");
+
+        error!(ctx= "Context", context = ?context);
 
         let action_name = context.request.post_body.get_action_name()?;
         let is_allowed = Self::ALLOWED_ACTIONS.contains(&action_name);
@@ -32,6 +33,7 @@ impl Action {
     }
 
     pub async fn download(&self) -> Result<impl warp::Reply, Errors> {
+        let _span = info_span!("Download Action");
         use warp::http::header::{CONNECTION, CONTENT_DISPOSITION, CONTENT_TYPE};
 
         let post_body = &self.context.request.post_body;
@@ -39,10 +41,12 @@ impl Action {
         let aas = post_body.get_string("as")?;
         let ttype = post_body.get_string("type")?;
         let base_href = post_body.get_string("baseHref")?;
-        let hrefs = post_body.get_string("href")?;
+        let hrefs = post_body.get_vec_string("href")?;
 
-        let archive = Archive::new(&self.context);
-        let output = archive.output();
+        let mut archive = Archive::new(&self.context);
+        let output = archive.output(&hrefs);
+
+        //dbg!(output);
 
         let response = warp::http::Response::builder()
             .header(CONTENT_TYPE, "application/octet-stream")
@@ -63,7 +67,7 @@ impl Action {
 
     // pub async fn login(&self) -> Result<impl warp::Reply, Errors> {
     //     todo!()
-    // }
+    // }un
 
     // pub async fn logout(&self) -> Result<impl warp::Reply, Errors> {
     //     todo!()

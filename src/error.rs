@@ -1,9 +1,8 @@
-#[derive(Debug)]
 /// All the error on this application binary . It must include every type of error so we can show error
 /// properly to frontend
 
 /// Error are handled in controller.rs handle_rejection function
-
+#[derive(Debug)]
 pub enum Errors {
     // Action in query is invalid.
     InvalidAction,

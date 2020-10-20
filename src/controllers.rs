@@ -2,11 +2,15 @@ mod action;
 
 use serde_json::json;
 use std::collections::HashMap;
+use tracing::error;
+use tracing::info_span;
 
 pub async fn index(
     query_string: HashMap<String, serde_json::Value>,
     post_body: HashMap<String, serde_json::Value>,
 ) -> Result<impl warp::Reply, warp::Rejection> {
+    let _span = info_span!("Index Route");
+
     let config = crate::config::get_config();
     let request = crate::request::Request::new(query_string.into(), post_body.into());
 
@@ -42,8 +46,7 @@ pub async fn handle_rejection(
         message = "Server Error 500";
     }
 
-    // TODO Remove dbg!
-    dbg!(err);
+    error!(?err);
 
     let json = warp::reply::json(&json! ({
         "code": code.as_u16(),

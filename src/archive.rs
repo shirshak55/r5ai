@@ -22,53 +22,70 @@ impl<'a> Archive<'a> {
         }
     }
 
-    pub fn output(&self) -> String {
+    pub fn output(&mut self, hrefs: &[&str]) -> Result<String, Errors> {
+        self.add_hrefs(hrefs);
+
+        // Todo better ignore bad dirs or files instead of failing/ returning error ?
+        let files = self
+            .files
+            .iter()
+            .map(|v| v.as_os_str().to_str().ok_or(InvalidPath))
+            .collect::<Result<Vec<_>, Errors>>()?
+            .join(" ");
+
+        let dirs = self
+            .dirs
+            .iter()
+            .map(|v| v.as_os_str().to_str().ok_or(InvalidPath))
+            .collect::<Result<Vec<_>, Errors>>()?
+            .join(" ");
+
         // Todo Fix it . It scan be security issue
         let cmd = format!(
             "cd {root_dir} && tar --no-recursion -c -- {dirs} {files}",
             root_dir = self.base_path,
-            dirs = "",
-            files = ""
+            dirs = dirs,
+            files = files
         );
 
-        todo!()
+        Ok(cmd)
     }
 
-    fn add_file(self: &mut Self, file: OsString) {
-        self.files.push(file);
-    }
+    fn add_hrefs(&mut self, hrefs: &[&str]) -> Result<(), Errors> {
+        use std::path::Path;
 
-    fn add_dir(self: &mut Self, dirs: Vec<OsString>) -> Result<(), Errors> {
-        for dir in dirs {
-            // Todo may be skip instead of retuning error?
-            let normalized_path = self
-                .context
-                .convert_to_path(&dir.to_str().ok_or(InvalidPath)?);
+        for href in hrefs {
+            // TODO Normalize paths
+            let meta = std::fs::metadata(Path::new(&self.context.convert_to_path(href)?));
+
+            if let Ok(m) = meta {
+                if m.is_dir() {
+                    let dir = (&**href).to_owned();
+                    self.files.push(dir.into());
+                }
+
+                if m.is_file() {
+                    let file = (&**href).to_owned();
+                    self.files.push(file.into())
+                }
+            }
         }
 
         Ok(())
     }
 
-    fn add_hrefs(&self, hrefs: Vec<String>) {
-        use std::path::Path;
+    // fn add_file(self: &mut Self, file: OsString) {
+    //     self.files.push(file);
+    // }
 
-        // for href in hrefs {
-        //     let normalized_path = href;
-        //     // Todo Normalize paths
-        //     let rfile_name = Path::new(normalized_path.into()).file_name();
+    // fn add_dir(self: &mut Self, dirs: Vec<OsString>) -> Result<(), Errors> {
+    //     for dir in dirs {
+    //         // Todo may be skip instead of retuning error?
+    //         let normalized_path = self
+    //             .context
+    //             .convert_to_path(&dir.to_str().ok_or(InvalidPath)?);
+    //     }
 
-        //     // if let Ok(filename) = rfile_name {
-
-        //     //     if(self.is_managed_path(normalized_path)){
-        //     //         let path = self.convert_to_path(normalized_path);
-        //     //         let archived_file = ;
-
-        //     //         let meta -
-        //     //     };
-
-        //     // }
-        // }
-
-        todo!()
-    }
+    //     Ok(())
+    // }
 }

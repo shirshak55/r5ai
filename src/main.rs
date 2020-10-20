@@ -13,7 +13,7 @@ fn main() -> Result<(), String> {
 
     tracing_subscriber::fmt()
         .with_env_filter(traces)
-        .with_span_events(tracing_subscriber::fmt::format::FmtSpan::CLOSE)
+        .with_span_events(tracing_subscriber::fmt::format::FmtSpan::FULL)
         .init();
 
     let config = config::get_config();
